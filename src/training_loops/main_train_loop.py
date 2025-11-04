@@ -3,6 +3,7 @@ import torch
 import torchvision.utils as vutils
 
 from src.training_loops.train_one_epoch import *
+from src.training_loops.training_utils import *
 
 def _fmt_hms(sec: float) -> str:
     m, s = divmod(int(sec), 60)
@@ -153,4 +154,5 @@ def train_ddpm(
     print(_rule())
     print(f"Entrenamiento finalizado en {_fmt_hms(total_time)}")
     print(_rule())
+
 
