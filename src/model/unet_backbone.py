@@ -78,7 +78,7 @@ class UNetDenoiser(nn.Module):
     def __init__(self,
         in_channels: int = 3,
         base_channels: int = 128,
-        channel_mults: Sequence[int] = (1, 2, 2, 2),
+        channel_mults: Sequence[int] = (1, 2, 2, 2), # Cuanto multiplicamos base en cada bloque 
         num_res_blocks: int = 2,
         attn_resolutions: Set[int] = frozenset({16, 8}),
         time_embed_dim: int = 512,
@@ -102,51 +102,63 @@ class UNetDenoiser(nn.Module):
         # Construcción encoder
         ch = base_channels
         self.downs = nn.ModuleList()
-        self.skip_shapes = []
-
-        in_ch = ch
         resolutions = [img_resolution]
-        for mult in channel_mults:
+        enc_skip_channels = []  
+
+        in_ch = base_channels
+        for level_idx, mult in enumerate(channel_mults):
             out_ch = base_channels * mult
             blocks = nn.ModuleList()
-            for _ in range(num_res_blocks):
-                blocks.append(ResBlock(in_ch, out_ch, time_dim=time_embed_dim, dropout=dropout)) # Bloques ResNet
-                in_ch = out_ch
-                # atención opcional en esta resolución
-                if resolutions[-1] in attn_resolutions:
-                    blocks.append(AttnBlock(in_ch, num_heads=num_heads, head_dim=head_dim)) # Atencion en bajas capas
 
-            # Al final del nivel, si no es último, downsample
+            for _ in range(num_res_blocks):
+                blocks.append(ResBlock(in_ch, out_ch, time_dim=time_embed_dim, dropout=dropout))
+                in_ch = out_ch
+                if resolutions[-1] in attn_resolutions:
+                    blocks.append(AttnBlock(in_ch, num_heads=num_heads, head_dim=head_dim))
+
+            enc_skip_channels.append(in_ch) 
+
+            # decidir down por índice (último nivel NO hace down)
+            is_last_level = (level_idx == len(channel_mults) - 1)
             down = nn.Module()
             down.blocks = blocks
-            down.down = Downsample(in_ch) if mult != channel_mults[-1] else nn.Identity() # Reducimos resolucion en Encoder
+            down.down = Downsample(in_ch) if not is_last_level else nn.Identity()
             self.downs.append(down)
-            if mult != channel_mults[-1]:
+            if not is_last_level:
                 resolutions.append(resolutions[-1] // 2)
 
-        # Bottleneck
+        #Bottleneck 
+        bottleneck_res = resolutions[-1]
         self.mid = nn.ModuleList([
             ResBlock(in_ch, in_ch, time_dim=time_embed_dim, dropout=dropout),
-            AttnBlock(in_ch, num_heads=num_heads, head_dim=head_dim) if (resolutions[-1]//2) in attn_resolutions else nn.Identity(),
-            ResBlock(in_ch, in_ch, time_dim=time_embed_dim, dropout=dropout),])
+            AttnBlock(in_ch, num_heads=num_heads, head_dim=head_dim) if (bottleneck_res in attn_resolutions) else nn.Identity(),
+            ResBlock(in_ch, in_ch, time_dim=time_embed_dim, dropout=dropout)])
 
-        # Construcción decoder (mirror)
+        # DECODER CORREGIDO 
         self.ups = nn.ModuleList()
-        for mult in reversed(channel_mults):
-            out_ch = base_channels * mult
-            blocks = nn.ModuleList()
-            for _ in range(num_res_blocks + 1):
-                blocks.append(ResBlock(in_ch + out_ch if _ == 0 else in_ch, out_ch, time_dim=time_embed_dim, dropout=dropout))
-                in_ch = out_ch
-                res_for_attn = resolutions[-1] if mult == channel_mults[0] else (resolutions[-1] * 2)
+        dec_skips = list(reversed(enc_skip_channels))      
+        dec_multipliers = list(reversed(channel_mults))    
 
-                if res_for_attn in attn_resolutions:
-                    blocks.append(AttnBlock(in_ch, num_heads=num_heads, head_dim=head_dim))
+        cur_ch = in_ch  # canales que salen del bottleneck (último in_ch del encoder)
+        for level_idx, mult in enumerate(dec_multipliers):
+            out_ch  = base_channels * mult
+            skip_ch = dec_skips[level_idx]            
+
+            blocks = nn.ModuleList()
+
+            # Primer ResBlock: ENTRA con (cur_ch + skip_ch) tras el concat, SALE a out_ch
+            blocks.append(ResBlock(cur_ch + skip_ch, out_ch, time_dim=time_embed_dim, dropout=dropout))
+
+            for _ in range(num_res_blocks):
+                blocks.append(ResBlock(out_ch, out_ch, time_dim=time_embed_dim, dropout=dropout))
 
             up = nn.Module()
             up.blocks = blocks
-            up.up = Upsample(in_ch) if mult != channel_mults[0] else nn.Identity() # Aumentamos resolucion en Decoder
+            up.up = nn.Identity() if level_idx == 0 else Upsample(cur_ch)
             self.ups.append(up)
+
+            # Actualiza cur_ch para el próximo nivel del decoder
+            cur_ch = out_ch
 
             if mult != channel_mults[0]:
                 resolutions.append(resolutions[-1] * 2)
@@ -226,3 +238,4 @@ def build_unet_64x64(
         num_heads=num_heads,
         head_dim=head_dim,
         img_resolution=64)
+
