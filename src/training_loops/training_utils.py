@@ -28,6 +28,39 @@ def sample_ddpm(
     return grid if return_grid else x
 
 
+####### DDIM INFERENCE FOR TRAINING (LOW GPU USE) ############
+def save_image_grid(x, path, nrow=4):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    save_image(x, path, nrow=nrow)
+    print(f"[OK] Guardado grid en {path}")
+
+def ddim_steps_quad(T=1000, S=50, device="cuda"):
+    s = torch.linspace(0, 1, S+1, device=device)  
+    s2 = s**2                                  
+    ts = torch.round((T-1) * (1 - s2)).long()    
+    ts = torch.unique_consecutive(ts)        
+    return ts
+
+@torch.no_grad()
+def sample_ddim50(model, diffusion, n=16, img_size=256, device="cuda", save_path=None):
+    model.eval()
+    x = torch.randn(n, 3, img_size, img_size, device=device)
+
+    ts = ddim_steps_quad(T=diffusion.T, S=50, device=device) 
+    with torch.amp.autocast(device_type="cuda", enabled=False):
+        for i in range(len(ts) - 1):
+            t     = ts[i].expand(n)
+            tprev = ts[i+1].expand(n)
+            x = diffusion.p_sample_step_ddim(model, x, t, tprev, eta=0.0, clip_x0=False)
+
+    x = (x.clamp(-1,1) + 1) * 0.5
+    if save_path:
+        save_image_grid(x, save_path, nrow=int(n**0.5))
+    return x
+
+
+########### REST UTILS ################# 
+
 def get_lr(optimizer):
     return optimizer.param_groups[0]["lr"]
 
@@ -64,4 +97,5 @@ def gpu_mem_mb(device="cuda"):
         alloc = torch.cuda.memory_allocated() / (1024**2)
         reserv = torch.cuda.memory_reserved() / (1024**2)
         return alloc, reserv
+
     return 0.0, 0.0
