@@ -8,7 +8,6 @@ from src.training_loops.grad_scaler import *
 from src.training_loops.training_utils import *
 
 
-
 def train_one_epoch(
     model,
     diffusion,
@@ -72,7 +71,7 @@ def train_one_epoch(
             B = x.size(0)
             t = diffusion.sample_timesteps(B, device=device)
 
-            with autocast_ctx(device=device, enabled=bool(use_autocast)):
+            with autocast_ctx(device=device, enabled=bool(use_autocast), dtype="bf16"):
                 loss = diffusion.loss_simple(model, x, t) / grad_accum_steps
 
             if use_autocast and (scaler is not None):
@@ -134,7 +133,7 @@ def train_one_epoch(
 
                 probe_msg = ""
                 if probe_timesteps:
-                    with torch.no_grad(), autocast_ctx(device=device, enabled=False):
+                    with torch.no_grad(), autocast_ctx(device=device, enabled=True, dtype="bf16"):
                         vals = []
                         for tau in probe_timesteps:
                             t_fix = torch.full((B,), int(tau), device=device, dtype=torch.long)
