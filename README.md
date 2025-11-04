@@ -77,7 +77,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 |---|---|
 | ![](<./inference samples_low_gpu/30 epochs/celeba64_samples_e0.png>) | ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) |
 
-**Denoising strips**
+**Denoising strips (999,600,300,200,100,80,40,10,5,0)**
 
 *DDPM — 30 epochs — denoising de T → 0*:
 
@@ -102,7 +102,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 **Denoising strips**
 
 
-*DDPM — 1000 epochs — denoising de T → 0*:
+*DDPM — 1000 epochs — denoising de T → 0* (Showing 999,600,300,200,100,80,40,10,5,0 T) :
 
 ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
 
@@ -346,5 +346,6 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
