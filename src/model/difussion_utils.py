@@ -9,8 +9,9 @@ def extract(a: torch.Tensor, t: torch.Tensor, x_shape: torch.Size) -> torch.Tens
     Toma un vector 1D (longitud T) y lo indexa por t (B,), devolviendo (B, 1, 1, 1)
     broadcastable al tamaño de x.
     """
-    out = a.gather(-1, t.clamp(min=0).long())
-    return out.reshape((t.shape[0],) + (1,) * (len(x_shape) - 1))
+    t = t.long().clamp_(0, a.shape[0]-1)        
+    out = a.gather(0, t)                         
+    return out.view((t.shape[0],) + (1,) * (len(x_shape) - 1))
 
 def beta_schedule_linear(T: int, beta_min: float = 1e-4, beta_max: float = 2e-2) -> torch.Tensor:
     """
@@ -37,4 +38,5 @@ def beta_schedule_cosine(T: int, s: float = 0.008) -> torch.Tensor:
     alphas_bar = alphas_bar / alphas_bar[0]  # normaliza para que alpha_bar(0)=1
     betas = 1 - (alphas_bar[1:] / alphas_bar[:-1])
     return betas.clamp(min=1e-8, max=0.999)
+
 
