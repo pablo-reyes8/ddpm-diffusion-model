@@ -46,14 +46,20 @@ def sample_ddim50(model, diffusion, n=16, img_size=256, device="cuda", save_path
     model.eval()
     x = torch.randn(n, 3, img_size, img_size, device=device)
 
-    ts = ddim_steps_quad(T=diffusion.T, S=50, device=device) 
-    with torch.amp.autocast(device_type="cuda", enabled=False):
-        for i in range(len(ts) - 1):
-            t     = ts[i].expand(n)
-            tprev = ts[i+1].expand(n)
-            x = diffusion.p_sample_step_ddim(model, x, t, tprev, eta=0.0, clip_x0=False)
+    steps = 50
+    ts = torch.linspace(diffusion.T - 1, 0, steps + 1, device=device).round().long()
 
-    x = (x.clamp(-1,1) + 1) * 0.5
+    for i in range(steps):
+        t = torch.full((n,), int(ts[i].item()),   device=device, dtype=torch.long)
+        tprev = torch.full((n,), int(ts[i+1].item()), device=device, dtype=torch.long)
+
+        x = diffusion.p_sample_step_ddim(
+            model, x, t, tprev,
+            eta=0.0,
+            clip_x0=True, 
+            noise=None)
+
+    x = (x.clamp(-1, 1) + 1) * 0.5
     if save_path:
         save_image_grid(x, save_path, nrow=int(n**0.5))
     return x
@@ -99,3 +105,4 @@ def gpu_mem_mb(device="cuda"):
         return alloc, reserv
 
     return 0.0, 0.0
+
