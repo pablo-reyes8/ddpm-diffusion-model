@@ -12,6 +12,38 @@ def _fmt_hms(sec: float) -> str:
 
 def _rule(w=92, ch="─"):  # línea separadora
     return ch * w
+    
+def _is_colab():
+    return "google.colab" in sys.modules
+
+def _ensure_drive_mounted():
+    if _is_colab():
+        drive_root = "/content/drive"
+        if not os.path.isdir(drive_root):
+            try:
+                from google.colab import drive
+                drive.mount(drive_root, force_remount=False)
+            except Exception as e:
+                print(f"[DRIVE] No se pudo montar automáticamente: {e}")
+
+
+def _copy_ckpt_to_drive_fixed(src_path: str, drive_dir: str, fixed_name: str = "latest_ddpm.pt"):
+    """Copia el checkpoint a Drive con nombre fijo; si existe, lo reemplaza."""
+    try:
+        if not drive_dir:
+            return
+        if drive_dir.startswith("/content/drive"):
+            _ensure_drive_mounted()
+        os.makedirs(drive_dir, exist_ok=True)
+        dst_path = os.path.join(drive_dir, fixed_name)
+        if os.path.exists(dst_path):
+            os.remove(dst_path)
+            print(f"└─ [DRIVE]  eliminado previo → {dst_path}")
+        shutil.copy2(src_path, dst_path)
+        print(f"└─ [DRIVE]  copiado (fixed) → {dst_path}")
+    except Exception as e:
+        print(f"└─ [DRIVE]  ERROR al copiar a Drive: {e}")
+
 
 def train_ddpm(
     model, diffusion, train_loader, optimizer,
@@ -34,12 +66,15 @@ def train_ddpm(
     # Sampling diag:
     sample_seed: int | None = 1234,
     sample_steps: int | None = None,
-    # control fino al reanudar 
+    # control fino al reanudar
     reset_optimizer_state: bool = False,        # no cargar estado del optimizer
     override_lr: float | None = None,           # reasigna LR tras cargar
     override_weight_decay: float | None = None, # reasigna WD tras cargar
     override_ema_decay: float | None = None,    # reasigna EMA.decay tras cargar
-):
+    # Drive 
+    drive_ckpt_dir: str | None = None,          # p.ej. "/content/drive/MyDrive/ddpm_checkpoints"
+    copy_fixed_to_drive: bool = True,           # copiar con nombre fijo
+    fixed_drive_name: str = "latest_ddpm.pt" ):
 
     os.makedirs(ckpt_dir, exist_ok=True)
 
@@ -50,18 +85,17 @@ def train_ddpm(
     if scaler is None and use_autocast:
         scaler = make_grad_scaler(device=device, enabled=True)
 
-    # Resumen 
+    # Resumen
     global_step, start_epoch = 0, 0
     resumed = False
     if resume_path and load_ckpt is not None and os.path.exists(resume_path):
-        # si queremos resetear el optimizer, no lo pasamos al loader
         opt_for_load = None if reset_optimizer_state else optimizer
         step_loaded, extra = load_ckpt(
             resume_path, model,
             optimizer=opt_for_load,
             scaler=scaler, ema=ema,
             map_location=device)
-        
+
         if isinstance(extra, dict):
             global_step = int(extra.get("global_step", step_loaded or 0))
             start_epoch = int(extra.get("epoch", 0)) + 1
@@ -85,7 +119,7 @@ def train_ddpm(
             print(f"[RESUME] override_ema_decay → {override_ema_decay:.6f}")
         resumed = True
 
-    #  Header
+    #Header
     ema_decay = getattr(ema, "decay", None)
     ema_str   = f"{ema_decay:.6f}" if isinstance(ema_decay, (float, int)) else "on"
     print(_rule())
@@ -138,12 +172,16 @@ def train_ddpm(
             model.load_state_dict(backup)
             print(f"└─ [SAMPLE] grid → {out_path}")
 
-        # Checkpoints
+        # Checkpoints (local + copia a Drive con nombre fijo)
         if (save_ckpt is not None) and ((epoch % save_every == 0) or (epoch == epochs - 1)):
             ckpt_path = os.path.join(ckpt_dir, f"{run_name}_e{epoch:03d}.pt")
             save_ckpt(ckpt_path, model, optimizer, scaler, ema,
                       step=global_step, extra={"epoch": epoch, "global_step": global_step})
             print(f"└─ [CKPT]   saved → {ckpt_path}")
+
+            # copia fija a Drive 
+            if copy_fixed_to_drive and drive_ckpt_dir:
+                _copy_ckpt_to_drive_fixed(ckpt_path, drive_ckpt_dir, fixed_name=fixed_drive_name)
 
     if save_last and (save_ckpt is not None):
         ckpt_path = os.path.join(ckpt_dir, f"{run_name}_last.pt")
@@ -151,8 +189,14 @@ def train_ddpm(
                   step=global_step, extra={"epoch": epochs-1, "global_step": global_step})
         print(f"└─ [CKPT]   saved → {ckpt_path}")
 
+        # copia fija a Drive (last)
+        if copy_fixed_to_drive and drive_ckpt_dir:
+            _copy_ckpt_to_drive_fixed(ckpt_path, drive_ckpt_dir, fixed_name=fixed_drive_name)
+
     print(_rule())
     print(f"Entrenamiento finalizado en {_fmt_hms(total_time)}")
     print(_rule())
+
+
 
 
