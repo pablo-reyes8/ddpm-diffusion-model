@@ -27,29 +27,54 @@ def make_grad_scaler(device: str = "cuda", enabled: bool = True):
 
     return None
 
+def _cuda_dtype_supported(dtype: torch.dtype) -> bool:
+    if not torch.cuda.is_available():
+        return False
+    return dtype in (torch.bfloat16, torch.float16)
+
+
 @contextmanager
-def autocast_ctx(device: str = "cuda", enabled: bool = True):
+def autocast_ctx(
+    device: str = "cuda",
+    enabled: bool = True,
+    dtype: str = "bf16",          # "bf16" recomendado en A100
+    cache_enabled: bool = True    # a veces conviene False al perfilar
+):
     """
-    Contexto autocast compatible:
-      - Usa torch.amp.autocast(device_type='cuda'/'cpu') si existe.
-      - Si no, usa torch.cuda.amp.autocast() cuando device='cuda'.
-      - Si AMP off, nullcontext().
+    Autocast robusto:
+      - CUDA: usa torch.amp.autocast(device_type="cuda", dtype=...)
+      - CPU:  usa torch.amp.autocast(device_type="cpu",  dtype=torch.bfloat16) si enabled
+      - Desactiva limpio con nullcontext().
+    Notas:
+      * En BF16 NO uses GradScaler.
+      * En FP16 sí puedes usar GradScaler (p.ej., torch.cuda.amp.GradScaler()).
     """
+    
     if not enabled:
         with nullcontext():
             yield
         return
 
-    if hasattr(torch, "amp") and hasattr(torch.amp, "autocast"):
-        with torch.amp.autocast(device_type=("cuda" if device == "cuda" else "cpu")):
+    if device == "cuda":
+        want = _DTYPE_MAP.get(dtype.lower(), torch.bfloat16)
+        use = want if _cuda_dtype_supported(want) else torch.float16
+        with torch.amp.autocast(device_type="cuda", dtype=use, cache_enabled=cache_enabled):
             yield
         return
 
-    if device == "cuda" and hasattr(torch.cuda, "amp") and hasattr(torch.cuda.amp, "autocast"):
-        with torch.cuda.amp.autocast():
-            yield
+    # CPU autocast solo útil con bfloat16 en kernels soportados.
+    if device == "cpu":
+        try:
+            with torch.amp.autocast(device_type="cpu", dtype=torch.bfloat16, cache_enabled=cache_enabled):
+                yield
+        except Exception:
+            # fallback seguro
+            with nullcontext():
+                yield
         return
 
+    # Fallback por si aparece otro backend
     with nullcontext():
         yield
+
 
