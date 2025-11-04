@@ -1,5 +1,6 @@
 import torch
 from torchvision.utils import make_grid, save_image
+from torchvision.utils import save_image as _tv_save_image
 
 ## Inferencia desde T hasta 0 haciendo denoising ##
 @torch.no_grad()
@@ -29,39 +30,73 @@ def sample_ddpm(
 
 
 ####### DDIM INFERENCE FOR TRAINING (LOW GPU USE) ############
-def save_image_grid(x, path, nrow=4):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    save_image(x, path, nrow=nrow)
+def save_image_grid(x: torch.Tensor, path: str, nrow: int | None = None):
+    """
+    Guarda un grid de imágenes en `path`. Crea la carpeta únicamente si existe un directorio en la ruta.
+    """
+    x = x.detach().float().cpu()
+
+    if nrow is None:
+        n = x.size(0)
+        nrow = int(n**0.5)
+        if nrow < 1: 
+            nrow = 1
+
+    dirpath = os.path.dirname(path)
+    if dirpath:      
+        os.makedirs(dirpath, exist_ok=True)
+
+    _tv_save_image(x, path, nrow=nrow)
     print(f"[OK] Guardado grid en {path}")
 
-def ddim_steps_quad(T=1000, S=50, device="cuda"):
-    s = torch.linspace(0, 1, S+1, device=device)  
-    s2 = s**2                                  
-    ts = torch.round((T-1) * (1 - s2)).long()    
-    ts = torch.unique_consecutive(ts)        
-    return ts
 
 @torch.no_grad()
-def sample_ddim50(model, diffusion, n=16, img_size=256, device="cuda", save_path=None):
+def ddim_sample(
+    model, diffusion, *, n=16, img_size=256, device="cuda",
+    ema=None, save_path=None, seed=1234,
+    steps=50, eta=0.0, schedule="karras",  # "linear" | "cosine_alpha_bar" | "karras"
+    clip_x0=True):
+  
+    was_training = model.training
     model.eval()
-    x = torch.randn(n, 3, img_size, img_size, device=device)
+    backup = None
+    if ema is not None:
+        backup = {k: v.detach().clone() for k,v in model.state_dict().items()}
+        ema.copy_to(model)
 
-    steps = 50
-    ts = torch.linspace(diffusion.T - 1, 0, steps + 1, device=device).round().long()
+    if seed is not None:
+        torch.manual_seed(seed)
+
+    x = torch.randn(n, 3, img_size, img_size, device=device)
+    T = diffusion.T
+
+    if schedule == "linear":
+        idx = torch.linspace(T-1, 0, steps+1, device=device)
+    elif schedule == "cosine_alpha_bar":
+        s = torch.linspace(0, 1, steps+1, device=device)
+        w = 0.5 * (1 - torch.cos(torch.pi * s))
+        idx = (T-1) * (1 - w)
+    elif schedule == "karras":
+        p = 2.0
+        s = torch.linspace(0, 1, steps+1, device=device) ** p
+        idx = (T-1) * (1 - s)
+    else:
+        raise ValueError("schedule inválido")
+
+    ts = idx.round().clamp_(0, T-1).long()
 
     for i in range(steps):
-        t = torch.full((n,), int(ts[i].item()),   device=device, dtype=torch.long)
-        tprev = torch.full((n,), int(ts[i+1].item()), device=device, dtype=torch.long)
-
+        t  = ts[i].repeat(n).clone()
+        tprev = ts[i+1].repeat(n).clone()
         x = diffusion.p_sample_step_ddim(
-            model, x, t, tprev,
-            eta=0.0,
-            clip_x0=True, 
-            noise=None)
+            model, x, t, tprev, eta=eta, clip_x0=clip_x0, noise=None)
 
-    x = (x.clamp(-1, 1) + 1) * 0.5
+    x = (x.clamp(-1,1) + 1)*0.5
     if save_path:
         save_image_grid(x, save_path, nrow=int(n**0.5))
+    if backup is not None:
+        model.load_state_dict(backup)
+    model.train(was_training)
     return x
 
 
@@ -105,4 +140,5 @@ def gpu_mem_mb(device="cuda"):
         return alloc, reserv
 
     return 0.0, 0.0
+
 
