@@ -58,6 +58,64 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 └── notebooks_showcase/               # Jupyter notebooks for demonstration
 ```
 
+
+## 🎨 Results — Low GPU
+
+### 1) Training Progress (quick glance)
+
+| Epoch 0 | Epoch 20 | Epoch 40 |
+|---|---|---|
+| ![](<./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e000.png>) | ![](<./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e014.png>) | ![](<./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e054.png>) |
+
+---
+
+### 2) Inference — DDPM (30 vs 50 epochs)
+
+**Grids**
+
+| DDPM — 30 epochs | DDPM — 50 epochs |
+|---|---|
+| ![](<./inference samples_low_gpu/30 epochs/celeba64_samples_e0.png>) | ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) |
+
+**Denoising strips**
+
+*DDPM — 30 epochs — denoising de T → 0*:
+
+![](<./inference samples_low_gpu/30 epochs/celeba64_denoise_strip_e03.png>)  
+
+
+*DDPM — 50 epochs — denoising de T → 0*:
+
+![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
+
+
+---
+
+### 3) Inference — DDPM vs DDIM (50 epochs)
+
+**Grids**
+
+| DDPM (50e) | DDIM 50 steps (50e) |
+|---|---|
+| ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) | ![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_ddim50_2.png>) |
+
+**Denoising strips**
+
+
+*DDPM — 1000 epochs — denoising de T → 0*:
+
+![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
+
+
+*DDIM — 50 steps — denoising de T → 0*:
+
+![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)  
+
+
+
+
+
+
 ## 🚀 Installation
 
 ### Prerequisites
@@ -204,37 +262,6 @@ ddim_infer_sample(
 )
 ```
 
-## 🎨 Results
-
-The model has been trained on the CelebA dataset (64x64 resolution) and produces high-quality facial images. Sample results are shown below:
-
-### Training Progression
-
-The model progressively improves image quality throughout training:
-
-![Training Progress](Samples_low_gpu/celeba64_ddpm_lowgpu_samples_e050.png)
-_Sample generated after 50 epochs of training_
-
-### Denoising Process
-
-The denoising process can be visualized as the model removes noise step by step:
-
-![Denoising Strip](Generate%20Samples_low_gpu/50%20epochs/DDPM/celeba64_denoise_strip_e03.png)
-_Visualization of the denoising process from noise to clean image_
-
-### Attention Network Results
-
-Models with attention mechanisms show improved detail and coherence:
-
-![Attention Results](Samples_attn_net/celeba64_ddpm_attn_samples_e020.png)
-_Samples from attention-enhanced U-Net architecture_
-
-### DDIM vs DDPM
-
-DDIM sampling provides faster generation with comparable quality:
-
-![DDIM Samples](Generate%20Samples_low_gpu/50%20epochs/DDIM/celeba64_ddim50_2.png)
-_DDIM sampling with 50 steps (vs 1000 steps for DDPM)_
 
 ## 🏗️ Architecture
 
@@ -319,3 +346,4 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
