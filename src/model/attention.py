@@ -40,43 +40,35 @@ def group_norm(channels: int, num_groups: int = 32) -> nn.GroupNorm:
 
 
 class AttnBlock(nn.Module):
-    """
-    Auto-atención espacial multi-head simple para mapas (B, C, H, W).
-    Pre-norm → QKV → atención → proyección.
-    Usar en resoluciones bajas (p.ej., 16x16 y 8x8).
-    """
-    def __init__(self, channels: int, num_heads: int = 4, head_dim: int = 64):
+    def __init__(self, channels: int, num_heads: int = 4, head_dim: int = 64, p_drop: float = 0.0):
         super().__init__()
-        self.channels = channels
+        assert channels > 0 and num_heads > 0 and head_dim > 0
+        self.channels  = channels
         self.num_heads = num_heads
-        self.head_dim = head_dim
-        inner = num_heads * head_dim
+        self.head_dim  = head_dim
+        self.p_drop    = float(p_drop)
 
+        inner = num_heads * head_dim
         self.norm = group_norm(channels)
-        self.qkv  = nn.Conv2d(channels, inner * 3, kernel_size=1, bias=False) # Proyeccion KQV, Kernel de 1 es una proyeccion
+        self.qkv  = nn.Conv2d(channels, inner * 3, kernel_size=1, bias=False)
         self.proj = nn.Conv2d(inner, channels, kernel_size=1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        b, c, h, w = x.shape
-        h_in = self.norm(x)
+        B, C, H, W = x.shape
+        N = H * W
 
-        qkv = self.qkv(h_in)  # (B, 3*inner, H, W)
-        q, k, v = torch.chunk(qkv, 3, dim=1)  # Dividimos el tensor proyectado en (B, inner, H, W) cada uno
+        h = self.norm(x)
+        qkv = self.qkv(h).reshape(B, 3, self.num_heads, self.head_dim, N)
+        q, k, v = qkv.unbind(dim=1)                        # (B, heads, d, N)
+        q = q.permute(0, 1, 3, 2).contiguous()             # (B, heads, N, d)
+        k = k.permute(0, 1, 3, 2).contiguous()
+        v = v.permute(0, 1, 3, 2).contiguous()
 
-        # reshapes a (B, heads, head_dim, HW)
-        def reshape_heads(t):
-            t = t.reshape(b, self.num_heads, self.head_dim, h * w)
-            return t
+        # Dropout dentro de SDPA (solo en training)
+        dp = self.p_drop if self.training and self.p_drop > 0.0 else 0.0
+        out = torch.nn.functional.scaled_dot_product_attention(
+            q, k, v, dropout_p=dp, is_causal=False)                                       
 
-        q = reshape_heads(q)
-        k = reshape_heads(k)
-        v = reshape_heads(v)
-
-        # atenciones: (B, heads, HW, HW)
-        attn = torch.einsum('bhcn,bhdn->bhcd', q, k) / math.sqrt(self.head_dim) # Einstein summation
-        attn = attn.softmax(dim=-1)
-
-        out = torch.einsum('bhcd,bhdn->bhcn', attn, v)
-        out = out.reshape(b, self.num_heads * self.head_dim, h, w)
+        out = out.permute(0, 1, 3, 2).contiguous().reshape(B, self.num_heads * self.head_dim, H, W)
         out = self.proj(out)
         return x + out
