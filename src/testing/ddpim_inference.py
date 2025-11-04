@@ -15,20 +15,15 @@ def ddim_infer_sample(
     out_path: str = "samples_ddim.png",
     save_individual: bool = False,
     out_dir: str = "samples_individual",
-    seed = 1234,
-    # DDIM params
-    steps: int = 50,                 # nº de pasos de muestreo (<< T)
-    eta: float = 0.0,                # 0 = determinista, >0 añade ruido
-    schedule_kind: str = "linear",   # "linear" o "cosine" para espaciar los t
-    schedule_idx = None,          # lista explícita de t (descendentes)
-):
-    """
-    Genera n imágenes con DDIM (steps << T) y guarda un grid.
-    Requiere: diffusion.p_sample_step_ddim(model_eps, x_t, t, t_prev, eta).
-    """
-    # --- modo eval + (opcional) swap a EMA ---
+    seed: int | None = 1234,
+    steps: int = 50,
+    eta: float = 0.0,
+    schedule_kind: str = "t_linear",   # "t_linear" o "alpha_bar_cosine"
+    schedule_idx: list[int] | None = None):
+  
     was_training = model.training
     model.eval()
+
     backup_state = None
     if ema is not None:
         backup_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
@@ -40,24 +35,47 @@ def ddim_infer_sample(
     B = n
     x = torch.randn(B, 3, img_size, img_size, device=device)
 
-    #  construir schedule de índices (t) descendente: T-1 -> ... -> 0
     T = diffusion.T
-    if schedule_idx is None:
-        if schedule_kind == "cosine":
-            s = torch.linspace(0, 1, steps, device=device)
-            w = 0.5 * (1 - torch.cos(math.pi * s))
-            idx = torch.round((T - 1) * (1 - w)).long()
-        else:
-            idx = torch.round(torch.linspace(T - 1, 0, steps, device=device)).long()
-        schedule = sorted(set(idx.tolist()), reverse=True)
-    else:
-        schedule = sorted(set(int(t) for t in schedule_idx), reverse=True)
 
-    # loop DDIM: t -> t_prev
-    for i, t_cur in enumerate(schedule):
-        t_cur_t = torch.full((B,), t_cur, device=device, dtype=torch.long)
-        t_prev  = schedule[i + 1] if i + 1 < len(schedule) else 0
-        t_prev_t = torch.full((B,), t_prev, device=device, dtype=torch.long)
+    def build_schedule():
+        if schedule_idx is not None:
+            s = torch.tensor(sorted({int(t) for t in schedule_idx}, reverse=True), device=device)
+            if s[-1].item() != 0:
+                s = torch.cat([s, torch.zeros(1, device=device, dtype=s.dtype)])
+            return s
+
+        if schedule_kind == "t_linear":
+            # pasos equiespaciados en t, incluyendo 0
+            s = torch.linspace(T-1, 0, steps, device=device)
+            s = torch.unique_consecutive(s.round().long(), dim=0)
+            if s[-1].item() != 0:
+                s = torch.cat([s, torch.zeros(1, device=device, dtype=s.dtype)])
+            return s
+
+        elif schedule_kind == "alpha_bar_cosine":
+            a_bar = diffusion.alphas_cumprod 
+            u = torch.linspace(0.0, 1.0, steps, device=device)
+            targets = (1.0 - u)  
+            s_list = []
+            for z in targets:
+                # índice t tal que ᾱ_t ≈ z (como a_bar es monótona ↓, usamos argmin |ᾱ - z|)
+                t_idx = (a_bar - z).abs().argmin()
+                s_list.append(int(t_idx.item()))
+            s = torch.tensor(sorted(set(s_list), reverse=True), device=device)
+            if s[-1].item() != 0:
+                s = torch.cat([s, torch.zeros(1, device=device, dtype=s.dtype)])
+            return s
+
+        else:
+            raise ValueError(f"schedule_kind desconocido: {schedule_kind}")
+
+    schedule = build_schedule()
+    #  loop DDIM: t -> t_prev -
+    for i in range(len(schedule) - 1):
+        t_cur  = schedule[i]
+        t_prev = schedule[i+1]
+        t_cur_t  = torch.full((B,), int(t_cur.item()),  device=device, dtype=torch.long)
+        t_prev_t = torch.full((B,), int(t_prev.item()), device=device, dtype=torch.long)
 
         x = diffusion.p_sample_step_ddim(
             lambda x_t, tt: model(x_t, tt),
@@ -66,26 +84,23 @@ def ddim_infer_sample(
             t_prev=t_prev_t,
             eta=eta,
             clip_x0=True,
-            noise=None,  # DDIM puede ser determinista si eta=0
-        )
+            noise=None,)
 
     x_vis = (x.clamp(-1, 1) + 1) * 0.5
     nrow = int(math.sqrt(B)) if int(math.sqrt(B))**2 == B else math.ceil(math.sqrt(B))
     grid = vutils.make_grid(x_vis, nrow=nrow, padding=2)
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     vutils.save_image(grid, out_path)
-    print(f"[INFER-DDIM] Grid guardado en: {out_path}  (steps={len(schedule)}, eta={eta})")
+    print(f"[INFER-DDIM] Grid → {out_path}  (steps={len(schedule)-1}, eta={eta}, schedule={schedule_kind})")
 
     if save_individual:
         os.makedirs(out_dir, exist_ok=True)
         for i in range(B):
             vutils.save_image(x_vis[i], os.path.join(out_dir, f"img_{i:03d}.png"))
-        print(f"[INFER-DDIM] {B} imágenes individuales guardadas en: {out_dir}")
 
     if backup_state is not None:
         model.load_state_dict(backup_state)
     model.train(was_training)
-
     return grid
 
 
@@ -180,3 +195,4 @@ def render_denoise_strip_ddim(
 
     model.train(was_training)
     return grid
+
