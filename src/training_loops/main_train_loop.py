@@ -67,14 +67,20 @@ def train_ddpm(
     sample_seed: int | None = 1234,
     sample_steps: int | None = None,
     # control fino al reanudar
-    reset_optimizer_state: bool = False,        # no cargar estado del optimizer
-    override_lr: float | None = None,           # reasigna LR tras cargar
-    override_weight_decay: float | None = None, # reasigna WD tras cargar
-    override_ema_decay: float | None = None,    # reasigna EMA.decay tras cargar
-    # Drive 
-    drive_ckpt_dir: str | None = None,          # p.ej. "/content/drive/MyDrive/ddpm_checkpoints"
-    copy_fixed_to_drive: bool = True,           # copiar con nombre fijo
-    fixed_drive_name: str = "latest_ddpm.pt" ):
+    reset_optimizer_state: bool = False,
+    override_lr: float | None = None,
+    override_weight_decay: float | None = None,
+    override_ema_decay: float | None = None,
+
+    # control de EMA al reanudar ===
+    repair_ema_on_resume: bool = False,   # activa la verificación/arreglo de EMA
+    ema_decay_after_repair: float = 0.9995,  # decay a usar tras reiniciar EMA
+
+    # Drive
+    drive_ckpt_dir: str | None = None,
+    copy_fixed_to_drive: bool = True,
+    fixed_drive_name: str = "latest_ddpm.pt",
+):
 
     os.makedirs(ckpt_dir, exist_ok=True)
 
@@ -89,11 +95,16 @@ def train_ddpm(
     global_step, start_epoch = 0, 0
     resumed = False
     if resume_path and load_ckpt is not None and os.path.exists(resume_path):
+        # si queremos resetear el optimizer, no lo pasamos al loader
         opt_for_load = None if reset_optimizer_state else optimizer
+
+        # CLAVE: si repair_ema_on_resume=True, NO cargamos la EMA del ckpt
+        ema_for_load = None if repair_ema_on_resume else ema
+
         step_loaded, extra = load_ckpt(
             resume_path, model,
             optimizer=opt_for_load,
-            scaler=scaler, ema=ema,
+            scaler=scaler, ema=ema_for_load,
             map_location=device)
 
         if isinstance(extra, dict):
@@ -113,15 +124,28 @@ def train_ddpm(
                 g["weight_decay"] = float(override_weight_decay)
             print(f"[RESUME] override_weight_decay → {override_weight_decay:.3e}")
         if override_ema_decay is not None:
-            # algunas clases EMA guardan decay en state; aquí lo forzamos
             if hasattr(ema, "decay"):
                 ema.decay = float(override_ema_decay)
             print(f"[RESUME] override_ema_decay → {override_ema_decay:.6f}")
         resumed = True
 
-    #Header
-    ema_decay = getattr(ema, "decay", None)
-    ema_str   = f"{ema_decay:.6f}" if isinstance(ema_decay, (float, int)) else "on"
+        # reparar/verificar EMA justo tras reanudar ===
+        if (ema is not None) and repair_ema_on_resume:
+            # como no la cargamos del ckpt, la inicializamos desde el modelo
+            ema_reinit_from_model(ema, model)
+            ema_set_decay(ema, float(ema_decay_after_repair))
+            print(f"[RESUME][EMA] Salté EMA del ckpt → reinicializada desde el modelo | decay={ema.decay:.6f}")
+        elif (ema is not None) and (not repair_ema_on_resume):
+            # si sí la cargaste, igual verifica salud; si está mal, repárala
+            ok, reason, rel = ema_health(ema, model, rel_tol=5.0)
+            if not ok:
+                ema_reinit_from_model(ema, model)
+                ema_set_decay(ema, float(ema_decay_after_repair))
+                print(f"[RESUME][EMA][WARN] EMA del ckpt inválida ({reason}, rel={rel:.3f}). Reinicializada | decay={ema.decay:.6f}")
+
+    #  Header (NO tocado)
+    ema_decay_val = getattr(ema, "decay", None)
+    ema_str   = f"{ema_decay_val:.6f}" if isinstance(ema_decay_val, (float, int)) else "on"
     print(_rule())
     print(f"DDPM run: {run_name}")
     print(f"Device: {device} | autocast: {use_autocast} | EMA: {ema_str} | "
@@ -179,7 +203,7 @@ def train_ddpm(
                       step=global_step, extra={"epoch": epoch, "global_step": global_step})
             print(f"└─ [CKPT]   saved → {ckpt_path}")
 
-            # copia fija a Drive 
+            # SOLO AGREGADO: copia fija a Drive 
             if copy_fixed_to_drive and drive_ckpt_dir:
                 _copy_ckpt_to_drive_fixed(ckpt_path, drive_ckpt_dir, fixed_name=fixed_drive_name)
 
@@ -196,6 +220,7 @@ def train_ddpm(
     print(_rule())
     print(f"Entrenamiento finalizado en {_fmt_hms(total_time)}")
     print(_rule())
+
 
 
 
