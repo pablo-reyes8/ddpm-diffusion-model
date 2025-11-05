@@ -1,3 +1,5 @@
+# DDPM: Denoising Diffusion Probabilistic Model
+
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Repo size](https://img.shields.io/github/repo-size/pablo-reyes8/ddpm-diffusion-model)
@@ -7,8 +9,6 @@
 ![Forks](https://img.shields.io/github/forks/pablo-reyes8/ddpm-diffusion-model?style=social)
 ![Stars](https://img.shields.io/github/stars/pablo-reyes8/ddpm-diffusion-model?style=social)
 
-
-# DDPM: Denoising Diffusion Probabilistic Model
 
 A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for high-quality image generation. This project implements the diffusion model architecture described in the paper "Denoising Diffusion Probabilistic Models" (Ho et al., 2020) and includes support for both DDPM and DDIM sampling strategies.
 
@@ -476,6 +476,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
