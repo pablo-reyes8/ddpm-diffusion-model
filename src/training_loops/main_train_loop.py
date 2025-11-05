@@ -98,8 +98,8 @@ def train_ddpm(
         # si queremos resetear el optimizer, no lo pasamos al loader
         opt_for_load = None if reset_optimizer_state else optimizer
 
-        # CLAVE: si repair_ema_on_resume=True, NO cargamos la EMA del ckpt
-        ema_for_load = None if repair_ema_on_resume else ema
+        # si repair_ema_on_resume=True, NO cargamos la EMA del ckpt
+        ema_for_load = ema
 
         step_loaded, extra = load_ckpt(
             resume_path, model,
@@ -112,7 +112,7 @@ def train_ddpm(
             start_epoch = int(extra.get("epoch", 0)) + 1
         print(f"[RESUME] Cargado: {resume_path} | global_step={global_step} | start_epoch={start_epoch}")
 
-        # Overrides SOLO si reanudamos
+        # Overrides si reanudamos
         if reset_optimizer_state:
             print("[RESUME] Optimizer: estado NO cargado (reset).")
         if override_lr is not None:
@@ -129,21 +129,16 @@ def train_ddpm(
             print(f"[RESUME] override_ema_decay → {override_ema_decay:.6f}")
         resumed = True
 
-        # === NUEVO: reparar/verificar EMA justo tras reanudar ===
         if (ema is not None) and repair_ema_on_resume:
-            # como no la cargamos del ckpt, la inicializamos desde el modelo
-            ema_reinit_from_model(ema, model)
-            ema_set_decay(ema, float(ema_decay_after_repair))
-            print(f"[RESUME][EMA] Salté EMA del ckpt → reinicializada desde el modelo | decay={ema.decay:.6f}")
-        elif (ema is not None) and (not repair_ema_on_resume):
-            # si sí la cargaste, igual verifica salud; si está mal, repárala
-            ok, reason, rel = ema_health(ema, model, rel_tol=5.0)
-            if not ok:
-                ema_reinit_from_model(ema, model)
-                ema_set_decay(ema, float(ema_decay_after_repair))
-                print(f"[RESUME][EMA][WARN] EMA del ckpt inválida ({reason}, rel={rel:.3f}). Reinicializada | decay={ema.decay:.6f}")
+          ok, reason, rel = ema_health(ema, model, rel_tol=5.0)
+          if not ok:
+              ema_reinit_from_model(ema, model)
+              ema_set_decay(ema, float(ema_decay_after_repair))
+              print(f"[RESUME][EMA][AUTO] CKPT EMA inválida ({reason}, rel={rel:.3f}). Reinicializada | decay={ema.decay:.6f}")
+          else:
+              print(f"[RESUME][EMA][AUTO] CKPT EMA saludable (rel={rel:.3f}). Se conserva.")
 
-    #  Header (NO tocado)
+    #  Header 
     ema_decay_val = getattr(ema, "decay", None)
     ema_str   = f"{ema_decay_val:.6f}" if isinstance(ema_decay_val, (float, int)) else "on"
     print(_rule())
@@ -218,7 +213,7 @@ def train_ddpm(
                       step=global_step, extra={"epoch": epoch, "global_step": global_step})
             print(f"└─ [CKPT]   saved → {ckpt_path}")
 
-            # copia fija a Drive 
+            # copia Drive 
             if copy_fixed_to_drive and drive_ckpt_dir:
                 _copy_ckpt_to_drive_fixed(ckpt_path, drive_ckpt_dir, fixed_name=fixed_drive_name)
 
@@ -235,6 +230,7 @@ def train_ddpm(
     print(_rule())
     print(f"Entrenamiento finalizado en {_fmt_hms(total_time)}")
     print(_rule())
+
 
 
 
