@@ -1,5 +1,6 @@
 # DDPM: Denoising Diffusion Probabilistic Model
 
+
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Repo size](https://img.shields.io/github/repo-size/pablo-reyes8/ddpm-diffusion-model)
@@ -476,6 +477,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
