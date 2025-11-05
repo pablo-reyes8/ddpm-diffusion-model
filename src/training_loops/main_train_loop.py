@@ -72,7 +72,7 @@ def train_ddpm(
     override_weight_decay: float | None = None,
     override_ema_decay: float | None = None,
 
-    # control de EMA al reanudar ===
+    # control de EMA al reanudar 
     repair_ema_on_resume: bool = False,   # activa la verificación/arreglo de EMA
     ema_decay_after_repair: float = 0.9995,  # decay a usar tras reiniciar EMA
 
@@ -129,7 +129,7 @@ def train_ddpm(
             print(f"[RESUME] override_ema_decay → {override_ema_decay:.6f}")
         resumed = True
 
-        # reparar/verificar EMA justo tras reanudar ===
+        # === NUEVO: reparar/verificar EMA justo tras reanudar ===
         if (ema is not None) and repair_ema_on_resume:
             # como no la cargamos del ckpt, la inicializamos desde el modelo
             ema_reinit_from_model(ema, model)
@@ -186,15 +186,30 @@ def train_ddpm(
 
         # Muestras (EMA swap temporal)
         if (sample_fn is not None) and ((epoch % sample_every == 0) or (epoch == epochs - 1)):
-            out_path = os.path.join(ckpt_dir, f"{run_name}_samples_e{epoch:03d}.png")
-            backup = {k: v.detach().clone() for k, v in model.state_dict().items()}
-            ema.copy_to(model)
-            if sample_seed is not None:
-                torch.manual_seed(sample_seed)
-            _ = sample_fn(model, diffusion, n=sample_n, img_size=img_size,
-                          device=device, save_path=out_path)
-            model.load_state_dict(backup)
-            print(f"└─ [SAMPLE] grid → {out_path}")
+          out_path = os.path.join(ckpt_dir, f"{run_name}_samples_e{epoch:03d}.png")
+
+          use_ema_for_sample = False
+          rel = float("inf")
+          if ema is not None:
+              ok, _, rel = ema_health(ema, model, rel_tol=2.0) 
+              use_ema_for_sample = bool(ok and rel <= 1.0)
+
+          # guardar pesos
+          backup = {k: v.detach().clone() for k, v in model.state_dict().items()}
+          if use_ema_for_sample:
+              ema.copy_to(model)
+
+          #  muestrear 
+          if sample_seed is not None:
+              torch.manual_seed(sample_seed)
+          _ = sample_fn(
+              model, diffusion,
+              n=sample_n, img_size=img_size, device=device,
+              save_path=out_path,
+              ema=None)
+
+          model.load_state_dict(backup)
+          print(f"└─ [SAMPLE] grid → {out_path} | EMA_used={use_ema_for_sample} | rel={rel:.3f}")
 
         # Checkpoints (local + copia a Drive con nombre fijo)
         if (save_ckpt is not None) and ((epoch % save_every == 0) or (epoch == epochs - 1)):
@@ -203,7 +218,7 @@ def train_ddpm(
                       step=global_step, extra={"epoch": epoch, "global_step": global_step})
             print(f"└─ [CKPT]   saved → {ckpt_path}")
 
-            # SOLO AGREGADO: copia fija a Drive 
+            # copia fija a Drive 
             if copy_fixed_to_drive and drive_ckpt_dir:
                 _copy_ckpt_to_drive_fixed(ckpt_path, drive_ckpt_dir, fixed_name=fixed_drive_name)
 
@@ -220,6 +235,7 @@ def train_ddpm(
     print(_rule())
     print(f"Entrenamiento finalizado en {_fmt_hms(total_time)}")
     print(_rule())
+
 
 
 
