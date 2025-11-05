@@ -63,34 +63,46 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 ### 1) Training Progress (quick glance)
 
-| Epoch 0 | Epoch 27 | Epoch 60 |
-|---|---|---|
-| ![](<./samples_256celeba/celeba256_ddpm_attn_samples_e000.png>) | ![](<./samples_256celeba/celeba256_ddpm_attn_samples_e028.png>) | ![](<.samples_256celeba/celeba256_ddpm_attn_samples_e060.png>) |
+<p align="center">
+  <b>Epoch 0</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <b>Epoch 27</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <b>Epoch 60</b><br>
+
+  <img src="./samples_256celeba/celeba256_ddpm_attn_samples_e000.png" width="31%" />
+  <img src="./samples_256celeba/celeba256_ddpm_attn_samples_e028.png" width="31%" />
+  <img src="./samples_256celeba/celeba256_ddpm_attn_samples_e060.png" width="31%" />
+</p>
 
 ---
 
----
-
-### 3) Inference — DDPM vs DDIM (50 epochs)
+### 2) Inference — DDPM vs DDIM (50 epochs)
 
 **Grids**
 
 | DDPM (65e) | DDIM 100 steps (65e) |
 |---|---|
-| ![](<./samples_256celeba/DDPM/DDPM_65 epochs_grid.png>) | ![](<./inference samples_low_gpu/DDIM/celeba256_ddim_inference3.png>) |
+| ![](<./inference_256celeba/DDPM/DDPM_65 epochs_grid.png>) | ![](<./inference_256celeba/DDIM/celeba256_ddim_inference3.png>) |
 
 **Denoising strips**
 
-
 *DDPM — 1000 epochs — denoising de T → 0* (Showing 999,600,300,200,100,80,40,10,5,0 T) :
 
-![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
+![](<./inference_256celeba/DDPM/celeba256_denoise_strip2.png>)  
+
+*DDIM — 150 steps — denoising de T → 0*:
+
+![](<./inference_256celeba/DDIM/celeba256_denoise_strip_ddim.png>)  
 
 
-*DDIM — 50 steps — denoising de T → 0*:
+<br>
 
-![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)  
+<hr>
 
+<p align="center"><b>▼▼▼  Low GPU experiments  ▼▼▼</b></p>
+
+<hr>
+
+<br>
 
 
 ## 🎨 Results — Low GPU
@@ -101,31 +113,12 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 |---|---|---|
 | ![](<./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e000.png>) | ![](<./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e014.png>) | ![](<./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e054.png>) |
 
----
 
-### 2) Inference — DDPM (30 vs 50 epochs)
-
-**Grids**
-
-| DDPM — 30 epochs | DDPM — 50 epochs |
-|---|---|
-| ![](<./inference samples_low_gpu/30 epochs/celeba64_samples_e0.png>) | ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) |
-
-**Denoising strips (999,600,300,200,100,80,40,10,5,0)**
-
-*DDPM — 30 epochs — denoising de T → 0*:
-
-![](<./inference samples_low_gpu/30 epochs/celeba64_denoise_strip_e03.png>)  
-
-
-*DDPM — 50 epochs — denoising de T → 0*:
-
-![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
 
 
 ---
 
-### 3) Inference — DDPM vs DDIM (50 epochs)
+### 2) Inference — DDPM vs DDIM (50 epochs)
 
 **Grids**
 
@@ -135,15 +128,13 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 **Denoising strips**
 
-
 *DDPM — 1000 epochs — denoising de T → 0* (Showing 999,600,300,200,100,80,40,10,5,0 T) :
 
 ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
 
-
 *DDIM — 50 steps — denoising de T → 0*:
 
-![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)  
+![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)
 
 
 
@@ -380,6 +371,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
