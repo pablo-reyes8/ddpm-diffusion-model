@@ -59,6 +59,40 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 ```
 
 
+## 🎨 Results — CelebA256
+
+### 1) Training Progress (quick glance)
+
+| Epoch 0 | Epoch 27 | Epoch 60 |
+|---|---|---|
+| ![](<./samples_256celeba/celeba256_ddpm_attn_samples_e000.png>) | ![](<./samples_256celeba/celeba256_ddpm_attn_samples_e028.png>) | ![](<.samples_256celeba/celeba256_ddpm_attn_samples_e060.png>) |
+
+---
+
+---
+
+### 3) Inference — DDPM vs DDIM (50 epochs)
+
+**Grids**
+
+| DDPM (65e) | DDIM 100 steps (65e) |
+|---|---|
+| ![](<./samples_256celeba/DDPM/DDPM_65 epochs_grid.png>) | ![](<./inference samples_low_gpu/DDIM/celeba256_ddim_inference3.png>) |
+
+**Denoising strips**
+
+
+*DDPM — 1000 epochs — denoising de T → 0* (Showing 999,600,300,200,100,80,40,10,5,0 T) :
+
+![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
+
+
+*DDIM — 50 steps — denoising de T → 0*:
+
+![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)  
+
+
+
 ## 🎨 Results — Low GPU
 
 ### 1) Training Progress (quick glance)
@@ -346,6 +380,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
