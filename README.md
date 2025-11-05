@@ -6,7 +6,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 - [Features](#features)
 - [Project Structure](#project-structure)
-- [Results — At a Glance](#results)
+- [Main Results](#results)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Architecture](#architecture)
@@ -59,7 +59,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 ```
 
 
-## Results — At a Glance
+## Main Results
 
 
 <p align="center">
@@ -466,6 +466,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
