@@ -6,14 +6,14 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 - [Features](#features)
 - [Project Structure](#project-structure)
+- [Results — At a Glance](#results)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Results](#results)
 - [Architecture](#architecture)
 - [Docker Support](#docker-support)
 - [Citation](#citation)
 
-## ✨ Features
+##  Features
 
 - **DDPM Implementation**: Full implementation of the Denoising Diffusion Probabilistic Model
 - **DDIM Support**: Fast deterministic sampling with Denoising Diffusion Implicit Models
@@ -27,7 +27,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 - **Checkpoint Management**: Comprehensive checkpoint saving and resuming capabilities
 - **Visualization Tools**: Utilities for generating sample grids and denoising strips
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
@@ -59,7 +59,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 ```
 
 
-## 🎨 Results — At a Glance
+## Results — At a Glance
 
 
 <p align="center">
@@ -236,7 +236,7 @@ Inference — DDPM vs DDIM (50 epochs)
 
 
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 
@@ -271,7 +271,7 @@ docker build -t ddpm-model .
 docker run --gpus all -it ddpm-model
 ```
 
-## 💻 Usage
+## Usage
 
 ### Training
 
@@ -383,7 +383,7 @@ ddim_infer_sample(
 ```
 
 
-## 🏗️ Architecture
+## Architecture
 
 ### Diffusion Process
 
@@ -415,7 +415,7 @@ Where:
 - `ε_θ(x_t, t)` is the noise predicted by the model
 - `x_t` is the noisy image at timestep `t`
 
-## 🐳 Docker Support
+## Docker Support
 
 The project includes a Dockerfile for easy containerization. The Docker image includes:
 
@@ -437,7 +437,7 @@ docker run --gpus all -v $(pwd):/workspace -it ddpm-model
 docker run -v $(pwd):/workspace -it ddpm-model
 ```
 
-## 📚 Citation
+## Citation
 
 If you use this code in your research, please cite the original DDPM paper:
 
@@ -466,6 +466,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
