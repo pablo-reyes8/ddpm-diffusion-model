@@ -74,7 +74,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 
 <p align="center">
-  <b style="font-size:18px;">CelebA256 — Best Samples (65e)</b>
+  <b style="font-size:18px;">CelebA-HQ256 — Best Samples (65e)</b>
 </p>
 
 <p align="center">
@@ -477,6 +477,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
