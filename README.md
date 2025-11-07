@@ -329,10 +329,9 @@ diffusion = Diffusion(
 
 # Setup optimizer and EMA
 optimizer = torch.optim.AdamW(model.parameters(), lr=2e-4, weight_decay=1e-6)
-ema = ExponentialMovingAverage(model.parameters(), decay=0.9999)
+ema = EMA(model.parameters(), decay=0.9999)
 
 # Training
-save_ckpt, load_ckpt = make_checkpoint_utils()
 train_ddpm(
     model=model,
     diffusion=diffusion,
@@ -477,6 +476,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
