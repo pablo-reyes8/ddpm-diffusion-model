@@ -294,7 +294,7 @@ from src.model.difussion_class import Diffusion
 from src.model.unet_backbone import build_unet_64x64
 from src.data.load_data_from_torch import get_celeba_loaders
 from src.training_loops.main_train_loop import train_ddpm
-from src.training_loops.ema import ExponentialMovingAverage
+from src.training_loops.ema import EMA
 from src.training_loops.chekpoints import make_checkpoint_utils
 
 # Setup
@@ -476,6 +476,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
