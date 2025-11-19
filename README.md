@@ -11,7 +11,13 @@
 ![Stars](https://img.shields.io/github/stars/pablo-reyes8/ddpm-diffusion-model?style=social)
 
 
-A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for high-quality image generation. This project implements the diffusion model architecture described in the paper "Denoising Diffusion Probabilistic Models" (Ho et al., 2020) and includes support for both DDPM and DDIM sampling strategies.
+A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for high-quality image generation on CelebA and CelebA-HQ. The project reproduces the core architecture from *“Denoising Diffusion Probabilistic Models”* (Ho et al., 2020) and extends it with:
+
+- support for both **DDPM** and **DDIM** sampling,
+- UNet backbones **with and without self-attention**, and
+- controlled experiments on the trade-off between **sample quality**, **sampling speed**, and **model capacity**.
+
+Beyond being a faithful DDPM reimplementation, this repository is structured as a small research playground to study how architectural choices and sampling strategies impact diffusion model behaviour.
 
 ## 📋 Table of Contents
 
@@ -509,6 +515,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
