@@ -38,37 +38,6 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 - **Checkpoint Management**: Comprehensive checkpoint saving and resuming capabilities
 - **Visualization Tools**: Utilities for generating sample grids and denoising strips
 
-## Project Structure
-
-```
-.
-├── src/
-│   ├── model/
-│   │   ├── difussion_class.py      # Main Diffusion class with DDPM/DDIM logic
-│   │   ├── difussion_utils.py       # Beta schedules and utility functions
-│   │   ├── unet_backbone.py         # U-Net denoiser architecture
-│   │   └── attention.py             # Multi-head attention blocks
-│   ├── data/
-│   │   ├── load_data_from_torch.py  # CelebA data loading utilities
-│   │   ├── load_data_local.py       # Local image dataset loader
-│   │   └── subset_celebra.py        # Dataset subset utilities
-│   ├── training_loops/
-│   │   ├── main_train_loop.py       # Main training loop
-│   │   ├── train_one_epoch.py       # Single epoch training
-│   │   ├── ema.py                   # Exponential Moving Average
-│   │   ├── chekpoints.py            # Checkpoint save/load utilities
-│   │   ├── grad_scaler.py           # Gradient scaler for mixed precision
-│   │   └── training_utils.py        # Training helper functions
-│   └── testing/
-│       ├── ddpm_inference.py         # DDPM sampling functions
-│       └── ddpim_inference.py        # DDIM sampling functions
-├── models/                           # Trained model checkpoints
-├── Samples_low_gpu/                  # Generated samples from low-GPU training
-├── Samples_attn_net/                 # Generated samples with attention network
-├── Inference Samples_low_gpu/        # Post training DDPM and DDIM samples
-└── notebooks_showcase/               # Jupyter notebooks for demonstration
-```
-
 
 ## Main Results <a id="results"></a>
 
@@ -278,6 +247,36 @@ Inference — DDPM vs DDIM (50 epochs)
 
 
 
+## Project Structure
+
+```
+.
+├── src/
+│   ├── model/
+│   │   ├── difussion_class.py      # Main Diffusion class with DDPM/DDIM logic
+│   │   ├── difussion_utils.py       # Beta schedules and utility functions
+│   │   ├── unet_backbone.py         # U-Net denoiser architecture
+│   │   └── attention.py             # Multi-head attention blocks
+│   ├── data/
+│   │   ├── load_data_from_torch.py  # CelebA data loading utilities
+│   │   ├── load_data_local.py       # Local image dataset loader
+│   │   └── subset_celebra.py        # Dataset subset utilities
+│   ├── training_loops/
+│   │   ├── main_train_loop.py       # Main training loop
+│   │   ├── train_one_epoch.py       # Single epoch training
+│   │   ├── ema.py                   # Exponential Moving Average
+│   │   ├── chekpoints.py            # Checkpoint save/load utilities
+│   │   ├── grad_scaler.py           # Gradient scaler for mixed precision
+│   │   └── training_utils.py        # Training helper functions
+│   └── testing/
+│       ├── ddpm_inference.py         # DDPM sampling functions
+│       └── ddpim_inference.py        # DDIM sampling functions
+├── models/                           # Trained model checkpoints
+├── Samples_low_gpu/                  # Generated samples from low-GPU training
+├── Samples_attn_net/                 # Generated samples with attention network
+├── Inference Samples_low_gpu/        # Post training DDPM and DDIM samples
+└── notebooks_showcase/               # Jupyter notebooks for demonstration
+```
 
 
 
@@ -510,6 +509,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
