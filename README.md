@@ -142,6 +142,40 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 <hr>
 
+
+## 🧪 Research Angle 
+
+This project includes a set of controlled experiments designed to reveal how architectural and sampling choices affect diffusion model performance.
+
+### 1. Attention vs. No-Attention (UNet Variants)
+We trained:
+- A **vanilla UNet (no attention)** on *CelebA 64×64*
+- A **UNet with self-attention** on *CelebA-HQ 256×256*
+
+**Findings:**  
+Attention greatly improves global coherence (eye alignment, symmetry, background consistency), especially at higher resolutions. Models without attention converge faster but produce less structured faces.
+
+### 2. DDPM vs. DDIM Sampling
+Both sampling schemes were implemented:
+
+- **DDPM** → stochastic, **visibly better samples** in our CelebA-HQ256 runs  
+- **DDIM** → deterministic, roughly **5× faster** sampling for a modest drop in visual quality
+
+**Finding:**  
+DDPM produces sharper and more realistic faces at the cost of much higher compute. DDIM offers a practical speed–quality trade-off: slightly worse samples, but dramatically cheaper and faster sampling.
+
+### 3. Scaling Across Datasets
+Comparing 64×64 vs. 256×256 reveals how model capacity interacts with data complexity:
+
+- Low-res (CelebA 64×64): attention brings marginal gains  
+- High-res (CelebA-HQ 256×256): attention becomes essential for semantic consistency  
+
+This mirrors observations in modern diffusion papers and highlights the role of global context.
+
+---
+
+
+
 ## 🔁 Training Progress
 
 ### CelebA256 (quick glance)
@@ -476,6 +510,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
