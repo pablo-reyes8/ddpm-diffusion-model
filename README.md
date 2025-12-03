@@ -6,7 +6,6 @@
 ![Repo size](https://img.shields.io/github/repo-size/pablo-reyes8/ddpm-diffusion-model)
 ![Last commit](https://img.shields.io/github/last-commit/pablo-reyes8/ddpm-diffusion-model)
 ![Open issues](https://img.shields.io/github/issues/pablo-reyes8/ddpm-diffusion-model)
-![Contributors](https://img.shields.io/github/contributors/pablo-reyes8/ddpm-diffusion-model)
 ![Forks](https://img.shields.io/github/forks/pablo-reyes8/ddpm-diffusion-model?style=social)
 ![Stars](https://img.shields.io/github/stars/pablo-reyes8/ddpm-diffusion-model?style=social)
 
@@ -515,6 +514,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
