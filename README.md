@@ -344,8 +344,7 @@ batch_size = 128
 train_loader, val_loader, test_loader = get_celeba_loaders(
     root="./data",
     img_size=img_size,
-    batch_size=batch_size
-)
+    batch_size=batch_size)
 
 # Initialize model and diffusion
 model = build_unet_64x64(
@@ -354,16 +353,14 @@ model = build_unet_64x64(
     channel_mults=(1, 2, 2, 2),
     num_res_blocks=2,
     attn_resolutions={16, 8},
-    dropout=0.1
-).to(device)
+    dropout=0.1).to(device)
 
 diffusion = Diffusion(
     T=1000,
     schedule="linear",
     beta_min=1e-4,
     beta_max=2e-2,
-    img_size=img_size
-).to(device)
+    img_size=img_size).to(device)
 
 # Setup optimizer and EMA
 optimizer = torch.optim.AdamW(model.parameters(), lr=2e-4, weight_decay=1e-6)
@@ -385,8 +382,8 @@ train_ddpm(
     img_size=img_size,
     ckpt_dir="checkpoints",
     run_name="ddpm_celeba64",
-    ckpt_utils=(save_ckpt, load_ckpt)
-)
+    ckpt_utils=(save_ckpt, load_ckpt))
+
 ```
 
 ### Inference
@@ -407,8 +404,8 @@ ddpm_infer_sample(
     n=36,
     img_size=64,
     device=device,
-    out_path="samples.png"
-)
+    out_path="samples.png")
+
 ```
 
 ### DDIM Sampling
@@ -426,8 +423,7 @@ ddim_infer_sample(
     steps=50,
     eta=0.0,
     device=device,
-    out_path="samples_ddim.png"
-)
+    out_path="samples_ddim.png")
 ```
 
 
@@ -514,6 +510,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
