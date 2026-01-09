@@ -53,12 +53,12 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 
 <p align="center">
   <!-- Clickable thumbnails: al hacer clic se ven en grande -->
-  <a href="./inference_256celeba/DDPM/DDPM_65 epochs_grid.png">
-    <img src="./inference_256celeba/DDPM/DDPM_65 epochs_grid.png" width="46%" alt="CelebA256 DDPM 65e">
+  <a href="./inference_samples/inference_256celebra_2/DDPM/celeba256_samples_ddpm_2.png">
+    <img src="./inference_samples/inference_256celebra_2/DDPM/celeba256_samples_ddpm_4.png" width="46%" alt="CelebA256 DDPM 95e">
   </a>
   &nbsp;&nbsp;
-  <a href="./inference_256celeba/DDIM/celeba256_ddim_inference3.png">
-    <img src="./inference_256celeba/DDIM/celeba256_ddim_inference_65.png" width="46%" alt="CelebA256 DDIM 100 steps (65e)">
+  <a href="./inference_256celeba/DDIM/celeba256_ddim_inference4.png">
+    <img src=".\inference_samples\inference_256celebra_2\DDIM\celeba256_ddim_inference_6.png" width="46%" alt="CelebA256 DDIM 200 steps (95e)">
   </a>
 </p>
 
@@ -76,7 +76,7 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 
 <p align="center">
   <a href="./inference_256celeba/DDPM/celeba256_denoise_strip3.png">
-    <img src="./inference_256celeba/DDPM/celeba256_denoise_strip3.png" width="92%" alt="CelebA256 DDPM Denoising Strip">
+    <img src="./inference_samples/inference_256celebra_2/DDPM/celeba256_denoise_strip4.png" width="92%" alt="CelebA256 DDPM Denoising Strip">
   </a>
 </p>
 
@@ -88,12 +88,12 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 </p>
 
 <p align="center">
-  <a href="./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png">
-    <img src="./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png" width="46%" alt="LowGPU DDPM 50e">
+  <a href=".\inference_samples/inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png">
+    <img src=".\inference_samples/inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png" width="46%" alt="LowGPU DDPM 50e">
   </a>
   &nbsp;&nbsp;
   <a href="./inference samples_low_gpu/50 epochs/DDIM/celeba64_ddim50_2.png">
-    <img src="./inference samples_low_gpu/50 epochs/DDIM/celeba64_ddim50_2.png" width="46%" alt="LowGPU DDIM 50 steps (50e)">
+    <img src=".\inference_samples/inference samples_low_gpu/50 epochs/DDIM/celeba64_ddim50_2.png" width="46%" alt="LowGPU DDIM 50 steps (50e)">
   </a>
 </p>
 
@@ -108,7 +108,7 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 
 <p align="center">
   <a href="./inference_256celeba/DDPM/celeba256_denoise_strip3.png">
-    <img src="./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png" width="92%" alt="CelebA256 DDPM Denoising Strip">
+    <img src=".\inference_samples/inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png" width="92%" alt="CelebA256 DDPM Denoising Strip">
   </a>
 </p>
 
@@ -160,13 +160,13 @@ This mirrors observations in modern diffusion papers and highlights the role of 
   <b>Epoch 60</b><br><br>
 
   <a href="./samples_256celeba/celeba256_ddpm_attn_samples_e000.png">
-    <img src="./samples_256celeba/celeba256_ddpm_attn_samples_e000.png" width="28%" style="margin-right:36px;" alt="CelebA256 e0">
+    <img src=".\training_samples/samples_256celeba/celeba256_ddpm_attn_samples_e000.png" width="28%" style="margin-right:36px;" alt="CelebA256 e0">
   </a>
   <a href="./samples_256celeba/celeba256_ddpm_attn_samples_e028.png">
-    <img src="./samples_256celeba/celeba256_ddpm_attn_samples_e028.png" width="28%" style="margin-right:36px;" alt="CelebA256 e27">
+    <img src=".\training_samples/samples_256celeba/celeba256_ddpm_attn_samples_e028.png" width="28%" style="margin-right:36px;" alt="CelebA256 e27">
   </a>
   <a href="./samples_256celeba/celeba256_ddpm_attn_samples_e060.png">
-    <img src="./samples_256celeba/celeba256_ddpm_attn_samples_e060.png" width="28%" alt="CelebA256 e60">
+    <img src=".\training_samples/samples_256celeba/celeba256_ddpm_attn_samples_e060.png" width="28%" alt="CelebA256 e60">
   </a>
 </p>
 
@@ -180,13 +180,13 @@ This mirrors observations in modern diffusion papers and highlights the role of 
   <b>Epoch 40</b><br><br>
 
   <a href="./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e000.png">
-    <img src="./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e000.png" width="28%" style="margin-right:36px;" alt="LowGPU e0">
+    <img src=".\training_samples/samples_low_gpu/celeba64_ddpm_lowgpu_samples_e000.png" width="28%" style="margin-right:36px;" alt="LowGPU e0">
   </a>
   <a href="./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e014.png">
-    <img src="./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e014.png" width="28%" style="margin-right:36px;" alt="LowGPU e20">
+    <img src=".\training_samples/samples_low_gpu/celeba64_ddpm_lowgpu_samples_e014.png" width="28%" style="margin-right:36px;" alt="LowGPU e20">
   </a>
   <a href="./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e054.png">
-    <img src="./samples_low_gpu/celeba64_ddpm_lowgpu_samples_e054.png" width="28%" alt="LowGPU e40">
+    <img src=".\training_samples/samples_low_gpu/celeba64_ddpm_lowgpu_samples_e054.png" width="28%" alt="LowGPU e40">
   </a>
 </p>
 
@@ -203,11 +203,11 @@ This mirrors observations in modern diffusion papers and highlights the role of 
 
 | DDIM 50 steps (45e) | DDIM 50 steps (55e) |
 |---|---|
-| ![](<./inference_256celeba/DDIM/ddim_45_celebaHQ.png>) | ![](<./inference_256celeba/DDIM/celeba256_ddim_inference3.png>) |
+| ![](<./inference_samples/inference_256celeba/DDIM/ddim_45_celebaHQ.png>) | ![](<./inference_samples/inference_256celeba/DDIM/celeba256_ddim_inference3.png>) |
 
 **Denoising strips**
 - *DDPM — 1000 epochs — T → 0* (999,600,300,200,100,80,40,10,5,0):  
-  ![](<./inference_256celeba/DDPM/celeba256_denoise_strip2.png>)
+  ![](<./inference_samples/inference_256celeba/DDPM/celeba256_denoise_strip2.png>)
 
 
 </details>
@@ -225,24 +225,24 @@ Inference — DDPM (30 vs 50 epochs)
 
 | DDPM — 30 epochs | DDPM — 50 epochs |
 |---|---|
-| ![](<./inference samples_low_gpu/30 epochs/celeba64_samples_e0.png>) | ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) |
+| ![](<./inference_samples/inference samples_low_gpu/30 epochs/celeba64_samples_e0.png>) | ![](<./inference_samples/inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) |
 
 
 Inference — DDPM vs DDIM (50 epochs)
 
 | DDPM (50e) | DDIM 50 steps (50e) |
 |---|---|
-| ![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) | ![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_ddim50_2.png>) |
+| ![](<./inference_samples/inference samples_low_gpu/50 epochs/DDPM/celeba64_samples_e3.png>) | ![](<./inference_samples/inference samples_low_gpu/50 epochs/DDIM/celeba64_ddim50_2.png>) |
 
 **Denoising strips**
 
 *DDPM — 1000 epochs — denoising de T → 0* (Showing 999,600,300,200,100,80,40,10,5,0 T) :
 
-![](<./inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
+![](<./inference_samples/inference samples_low_gpu/50 epochs/DDPM/celeba64_denoise_strip_e03.png>)  
 
 *DDIM — 50 steps — denoising de T → 0*:
 
-![](<./inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)
+![](<./inference_samples/inference samples_low_gpu/50 epochs/DDIM/celeba64_denoise_strip_ddim_2.png>)
 
 
 
@@ -510,6 +510,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
