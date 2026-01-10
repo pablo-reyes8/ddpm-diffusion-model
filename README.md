@@ -48,7 +48,7 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 
 
 <p align="center">
-  <b style="font-size:18px;">CelebA-HQ256 — Best Samples (65e)</b>
+  <b style="font-size:18px;">CelebA-HQ256 — Best Samples (95e)</b>
 </p>
 
 <p align="center">
@@ -63,7 +63,7 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 </p>
 
 <p align="center">
-  <sub><b>Izq:</b> DDPM (65e)&nbsp;&nbsp;•&nbsp;&nbsp;<b>Der:</b> DDIM (100 steps, 65e)</sub>
+  <sub><b>Izq:</b> DDPM (65e)&nbsp;&nbsp;•&nbsp;&nbsp;<b>Der:</b> DDIM (95 steps, 65e)</sub>
 </p>
 
 <br>
@@ -510,6 +510,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
