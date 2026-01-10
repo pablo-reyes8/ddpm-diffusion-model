@@ -82,6 +82,58 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 
 <br>
 
+
+## Individual Best Picks <a id="best-picks"></a>
+
+<p align="center">
+  <b style="font-size:18px;">CelebA-HQ256 — Individual Best Picks</b><br>
+  <sub>Selected single images (click to open full size)</sub>
+</p>
+
+<!-- Row 1: DDPM (4 images) -->
+<p align="center">
+  <sub><b>DDPM</b></sub><br>
+  <a href="./inference_samples/showcase_reedme/DDPM/best1.png">
+    <img src="./inference_samples/showcase_reedme/DDPM/best1.png" width="23.5%" alt="DDPM best1">
+  </a>
+  <a href="./inference_samples/showcase_reedme/DDPM/best2.png">
+    <img src="./inference_samples/showcase_reedme/DDPM/best2.png" width="23.5%" alt="DDPM best2">
+  </a>
+  <a href="./inference_samples/showcase_reedme/DDPM/best3.png">
+    <img src="./inference_samples/showcase_reedme/DDPM/best3.png" width="23.5%" alt="DDPM best3">
+  </a>
+  <a href="./inference_samples/showcase_reedme/DDPM/best4.png">
+    <img src="./inference_samples/showcase_reedme/DDPM/best4.png" width="23.5%" alt="DDPM best4">
+  </a>
+</p>
+
+<br>
+
+<!-- Row 2: DDIM (3 images) -->
+<p align="center">
+  <sub><b>DDIM</b></sub><br>
+  <a href="./inference_samples/showcase_reedme/DDIM/best1.png">
+    <img src="./inference_samples/showcase_reedme/DDIM/best3.png" width="23.5%" alt="DDIM best1">
+  </a>
+  <a href="./inference_samples/showcase_reedme/DDIM/best2.png">
+    <img src="./inference_samples/showcase_reedme/DDIM/best2.png" width="23.5%" alt="DDIM best2">
+  </a>
+  <a href="./inference_samples/showcase_reedme/DDIM/best3.png">
+    <img src="./inference_samples/showcase_reedme/DDIM/best1.png" width="23.5%" alt="DDIM best3">
+  </a>
+  <a href="./inference_samples/showcase_reedme/DDIM/best4.png">
+    <img src="./inference_samples/showcase_reedme/DDIM/best4.png" width="23.5%" alt="DDIM best3">
+  </a>
+  
+</p>
+
+<p align="center">
+  <sub><b>Top:</b> DDPM &nbsp;&nbsp;•&nbsp;&nbsp; <b>Bottom:</b> DDIM</sub>
+</p>
+
+
+## Low GPU Cifrar 64x64 <a id="best-picks"></a>
+
 <!-- ===== Low GPU ===== -->
 <p align="center">
   <b style="font-size:18px;">Low GPU — Best Samples (50e)</b>
@@ -510,6 +562,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
