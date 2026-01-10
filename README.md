@@ -54,16 +54,16 @@ Beyond being a faithful DDPM reimplementation, this repository is structured as 
 <p align="center">
   <!-- Clickable thumbnails: al hacer clic se ven en grande -->
   <a href="./inference_samples/inference_256celebra_2/DDPM/celeba256_samples_ddpm_2.png">
-    <img src="./inference_samples/inference_256celebra_2/DDPM/celeba256_samples_ddpm_4.png" width="46%" alt="CelebA256 DDPM 95e">
+    <img src=".\inference_samples\showcase_reedme\grid_ddpm3.png" width="46%" alt="CelebA256 DDPM 95e">
   </a>
   &nbsp;&nbsp;
   <a href="./inference_256celeba/DDIM/celeba256_ddim_inference4.png">
-    <img src=".\inference_samples\inference_256celebra_2\DDIM\celeba256_ddim_inference_6.png" width="46%" alt="CelebA256 DDIM 200 steps (95e)">
+    <img src=".\inference_samples\showcase_reedme\grid_ddim1.png" width="46%" alt="CelebA256 DDIM 200 steps (95e)">
   </a>
 </p>
 
 <p align="center">
-  <sub><b>Izq:</b> DDPM (65e)&nbsp;&nbsp;•&nbsp;&nbsp;<b>Der:</b> DDIM (95 steps, 65e)</sub>
+  <sub><b>Izq:</b> DDPM (110e)&nbsp;&nbsp;•&nbsp;&nbsp;<b>Der:</b> DDIM (350 steps, 110e)</sub>
 </p>
 
 <br>
@@ -510,6 +510,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
