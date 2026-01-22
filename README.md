@@ -547,6 +547,14 @@ If you use this code in your research, please cite the original DDPM paper:
   volume={33},
   year={2020}
 }
+
+@inproceedings{song2021denoising,
+  title={Denoising Diffusion Implicit Models},
+  author={Song, Jiaming and Meng, Chenlin and Ermon, Stefano},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2021},
+  url={https://openreview.net/forum?id=St1giarCHYp}
+}
 ```
 
 ## 📝 License
@@ -564,6 +572,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware.
+
 
 
 
