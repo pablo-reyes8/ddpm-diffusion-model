@@ -92,6 +92,7 @@ class Diffusion(nn.Module):
 
 
     ## Main function for Training ###
+    # Calculamos el loss prediciendo el ruido inyectado con la Unet #
     def loss_simple(
         self,
         model_eps_pred_fn,   # callable(x_t, t) -> eps_pred
@@ -116,7 +117,7 @@ class Diffusion(nn.Module):
         return mse.mean()
 
 
-    ## Inference ###
+    ########## Inference #############
     def posterior_mean_variance(
         self, x_t: torch.Tensor, x0_hat: torch.Tensor, t: torch.Tensor):
         """
@@ -143,6 +144,7 @@ class Diffusion(nn.Module):
         if self.dynamic_threshold is not None:
             s = self.dynamic_threshold
             amax = x0_hat.detach().abs().flatten(1).max(dim=1).values  # (B,)
+            
             # evitamos dividir por 0
             amax = torch.maximum(amax, torch.tensor(1.0, device=x0_hat.device, dtype=x0_hat.dtype))
             x0_hat = (x0_hat.transpose(0, 1) / amax.clamp(min=s).unsqueeze(-1).unsqueeze(-1)).transpose(0, 1)
