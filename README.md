@@ -18,7 +18,7 @@ A PyTorch implementation of Denoising Diffusion Probabilistic Models (DDPM) for 
 
 Beyond being a faithful DDPM reimplementation, this repository is structured as a small research playground to study how architectural choices and sampling strategies impact diffusion model behaviour.
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Features](#features)
 - [Project Structure](#project-structure)
@@ -572,6 +572,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware. For reference, the CelebA-HQ was trained in a NVIDIA A100 40GB VRAM. 
+
 
 
 
