@@ -559,7 +559,7 @@ If you use this code in your research, please cite the original DDPM paper:
 
 ## 📝 License
 
-This project is open source and available under the MIT License.
+This project is open source and available under the MIT License, we encourage to cite Ho et al if using this code.
 
 ## 🤝 Contributing
 
@@ -572,6 +572,7 @@ Created as part of deep learning research and model development.
 ---
 
 **Note**: Training diffusion models can be computationally intensive. For best results, use a GPU with at least 8GB of VRAM. The project includes low-GPU configurations for training on limited hardware. For reference, the CelebA-HQ was trained in a NVIDIA A100 40GB VRAM. 
+
 
 
 
